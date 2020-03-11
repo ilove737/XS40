@@ -24,11 +24,6 @@ UINT8 ADCsumH, ADCsumL;
 unsigned int i, while_times = 0;
 float ADCavg, ButterymV;
 
-unsigned int beforeAlready_9V = 0;	 //之前已经有9V
-unsigned int beforeAlready_6300mV = 0; //之前已经有6.3V
-
-unsigned int WorkVoltageIsOK = 0;
-
 //void Timer0_ISR(void) interrupt 1 //interrupt address is 0x000B
 //{								  // 8192/(16000000/12) = 0.006144s = 6.144ms
 
@@ -37,7 +32,7 @@ unsigned int WorkVoltageIsOK = 0;
 unsigned char xdata allKey[5]; // 40个位，保存所有40个建的状态
 
 UINT8 tttt = 0;
-UINT16 TH1_INIT = 65535;		  // 系统时钟     16000 / 16000000 = 0.001s
+UINT16 TH1_INIT = 60000;		  // 系统时钟     16000 / 16000000 = 0.001s
 								  // 系统时钟1/12 1333 / 1333333 = 0.001s
 void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 {
@@ -46,9 +41,13 @@ void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 
 	// row1到row5依次拉低
 	P0 = 0xFF;
-	if (tttt == 5)
+	if (tttt == 5)	//所有键扫描完成
 	{
 		tttt = 0;
+		for (i = 0; i < 5; i++)
+		{
+			Send_Data_To_UART0(allKey[i]);
+		}
 	}
 	else
 	{
@@ -63,13 +62,14 @@ void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 		if (tttt == 4)
 			P04 = 0;
 
-		allKey[tttt] = ~P0;
-
-		Send_Data_To_UART0(tttt);
-		Send_Data_To_UART0(P0);
-
-		// 判断col1到col8的状态
-		Send_Data_To_UART0(~P1);
+		allKey[tttt] = ~P1;
+		
+		// Send_Data_To_UART0(tttt);
+		// Send_Data_To_UART0(P0);
+		
+		// // 判断col1到col8的状态
+		// // Send_Data_To_UART0(~P1);
+		// Send_Data_To_UART0(allKey[tttt]);
 
 		tttt++;
 	}
@@ -88,51 +88,13 @@ void main(void)
 	//set_WIDPD;
 	/////////////////////////////////////////////////////////////////////////////
 
-	Set_All_GPIO_Quasi_Mode; // Define in Function_define.h
-	// P00_PushPull_Mode;
-	// P10_PushPull_Mode;
-	// P11_PushPull_Mode;
-	// P12_PushPull_Mode;
-	// P00 = 0;
-	// P10 = 0;
-	// P11 = 0;
-	// P12 = 0;
-
+	Set_All_GPIO_Quasi_Mode;
+	
 	P00_PushPull_Mode;
 	P01_PushPull_Mode;
 	P02_PushPull_Mode;
 	P03_PushPull_Mode;
 	P04_PushPull_Mode;
-
-	P0 = 0xe0;
-
-	//P10_Input_Mode;
-	//P11_Input_Mode;
-	//P12_Input_Mode;
-	//P13_Input_Mode;
-	//P14_Input_Mode;
-	//P15_Input_Mode;
-	//P16_Input_Mode;
-	//P17_Input_Mode;
-	//P1=0x00;
-
-	//P10_OpenDrain_Mode;
-	//P11_OpenDrain_Mode;
-	//P12_OpenDrain_Mode;
-	//P13_OpenDrain_Mode;
-	//P14_OpenDrain_Mode;
-	//P15_OpenDrain_Mode;
-	//P16_OpenDrain_Mode;
-	//P17_OpenDrain_Mode;
-
-	//P10=0;
-	// P03_PushPull_Mode;
-	// P03_Quasi_Mode;
-	// P30_PushPull_Mode;
-
-	// P04_Input_Mode;
-	// P04_Quasi_Mode;
-	// P04_PushPull_Mode;
 
 	// TIMER0_MODE0_ENABLE;
 	// set_ET0; //enable Timer0 interrupt
