@@ -33,6 +33,9 @@ unsigned int WorkVoltageIsOK = 0;
 //{								  // 8192/(16000000/12) = 0.006144s = 6.144ms
 
 //}
+
+unsigned char xdata allKey[5]; // 40个位，保存所有40个建的状态
+
 UINT8 tttt = 0;
 UINT16 TH1_INIT = 65535;		  // 系统时钟     16000 / 16000000 = 0.001s
 								  // 系统时钟1/12 1333 / 1333333 = 0.001s
@@ -40,21 +43,36 @@ void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 {
 	TH1 = (65536 - TH1_INIT) / 256;
 	TL1 = (65536 - TH1_INIT) % 256;
-	// P04 = ~P04;
-	Send_Data_To_UART0(P0);
 
-	// row1到row5依次置位
-	P0 =0xE0;
-	P0 |= (1 << tttt);
-	tttt++;
-	if (tttt == 6)
+	// row1到row5依次拉低
+	P0 = 0xFF;
+	if (tttt == 5)
 	{
 		tttt = 0;
 	}
-	
-	// 判断col1到col8的状态
-	Send_Data_To_UART0(P1);
+	else
+	{
+		if (tttt == 0)
+			P00 = 0;
+		if (tttt == 1)
+			P01 = 0;
+		if (tttt == 2)
+			P02 = 0;
+		if (tttt == 3)
+			P03 = 0;
+		if (tttt == 4)
+			P04 = 0;
 
+		allKey[tttt] = ~P0;
+
+		Send_Data_To_UART0(tttt);
+		Send_Data_To_UART0(P0);
+
+		// 判断col1到col8的状态
+		Send_Data_To_UART0(~P1);
+
+		tttt++;
+	}
 }
 
 void main(void)
@@ -79,16 +97,35 @@ void main(void)
 	// P10 = 0;
 	// P11 = 0;
 	// P12 = 0;
-P0=0xe0;
-P1=0x00;
-P10_Input_Mode;
-P11_Input_Mode;
-P12_Input_Mode;
-P13_Input_Mode;
-P14_Input_Mode;
-P15_Input_Mode;
-P16_Input_Mode;
-P17_Input_Mode;
+
+	P00_PushPull_Mode;
+	P01_PushPull_Mode;
+	P02_PushPull_Mode;
+	P03_PushPull_Mode;
+	P04_PushPull_Mode;
+
+	P0 = 0xe0;
+
+	//P10_Input_Mode;
+	//P11_Input_Mode;
+	//P12_Input_Mode;
+	//P13_Input_Mode;
+	//P14_Input_Mode;
+	//P15_Input_Mode;
+	//P16_Input_Mode;
+	//P17_Input_Mode;
+	//P1=0x00;
+
+	//P10_OpenDrain_Mode;
+	//P11_OpenDrain_Mode;
+	//P12_OpenDrain_Mode;
+	//P13_OpenDrain_Mode;
+	//P14_OpenDrain_Mode;
+	//P15_OpenDrain_Mode;
+	//P16_OpenDrain_Mode;
+	//P17_OpenDrain_Mode;
+
+	//P10=0;
 	// P03_PushPull_Mode;
 	// P03_Quasi_Mode;
 	// P30_PushPull_Mode;
