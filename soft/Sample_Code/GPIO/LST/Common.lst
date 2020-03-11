@@ -1,0 +1,183 @@
+C51 COMPILER V9.56.0.0   COMMON                                                            03/10/2020 18:55:27 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE COMMON
+OBJECT MODULE PLACED IN .\Output\Common.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Common\Common.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\..\Include) DEF
+                    -INE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\LST\Common.lst) OBJECT(.\Output\Common.obj)
+
+line level    source
+
+   1          /*--------------------------------------------------------------------------------------------------------
+             --*/
+   2          /*                                                                                                        
+             - */
+   3          /* Copyright(c) 2016 Nuvoton Technology Corp. All rights reserved.                                        
+             - */
+   4          /*                                                                                                        
+             - */
+   5          /*--------------------------------------------------------------------------------------------------------
+             --*/
+   6          
+   7          //********************************************************************************************************
+             -***
+   8          //  Nuvoton Technoledge Corp. 
+   9          //  Website: http://www.nuvoton.com
+  10          //  E-Mail : MicroC-8bit@nuvoton.com
+  11          //  Date   : Apr/21/2016
+  12          //********************************************************************************************************
+             -***
+  13          
+  14          #include <stdio.h>
+  15          #include "N76E003.h"
+  16          #include "Common.h"
+  17          #include "Delay.h"
+  18          #include "SFR_Macro.h"
+  19          #include "Function_Define.h"
+  20          
+  21          //#define FOSC_160000  1
+  22          #define FOSC_221184  1
+  23          
+  24          //----------------------------------------------------------------------------------
+  25          // use timer1 as Baudrate generator, Maxmum Baudrate can ???? bps @ 16MHZ
+  26          //----------------------------------------------------------------------------------
+  27          void InitialUART0_Timer1(UINT32 u32Baudrate)    //T1M = 1, SMOD = 1
+  28          {
+  29   1          P06_Quasi_Mode;
+  30   1          P07_Quasi_Mode;
+  31   1          
+  32   1          SCON = 0x52;     //UART0 Mode1,REN=1,TI=1
+  33   1          TMOD |= 0x20;    //Timer1 Mode1
+  34   1          
+  35   1          set_SMOD;        //UART0 Double Rate Enable
+  36   1          set_T1M;         //Timer1 clock is sys tick
+  37   1          clr_BRCK;        //Serial port 0 baud rate clock source = Timer1
+  38   1      
+  39   1       
+  40   1      #ifdef FOSC_160000
+  41   1          TH1 = 256 - (1000000/u32Baudrate+1);               /*16 MHz */
+  42   1      #endif      
+  43   1      #ifdef FOSC_221184
+  44   1          TH1 = 256 - (1382400/u32Baudrate);              /*22.1184 MHz */
+  45   1      #endif
+  46   1          set_TR1;         // Timer1 run
+  47   1      }
+C51 COMPILER V9.56.0.0   COMMON                                                            03/10/2020 18:55:27 PAGE 2   
+
+  48          //---------------------------------------------------------------
+  49          void InitialUART0_Timer3(UINT32 u32Baudrate) //use timer3 as Baudrate generator
+  50          {
+  51   1          P06_Quasi_Mode;
+  52   1          P07_Quasi_Mode; 
+  53   1          
+  54   1          SCON = 0x52;     //UART0 Mode1,REN=1,TI=1
+  55   1          set_SMOD;        //UART0 Double Rate Enable
+  56   1          T3CON &= 0xF8;   //T3PS2=0,T3PS1=0,T3PS0=0(Prescale=1)
+  57   1          set_BRCK;        //UART0 baud rate clock source = Timer3
+  58   1      
+  59   1      #ifdef FOSC_160000
+  60   1          RH3    = HIBYTE(65536 - (1000000/u32Baudrate)-1);       /*16 MHz */
+  61   1          RL3    = LOBYTE(65536 - (1000000/u32Baudrate)-1);           /*16 MHz */
+  62   1      #endif
+  63   1      #ifdef FOSC_221184
+  64   1          RH3    = HIBYTE(65536 - (1382400/u32Baudrate));     /*22.1184 MHz */
+  65   1          RL3    = LOBYTE(65536 - (1382400/u32Baudrate));     /*22.1184 MHz */
+  66   1      #endif
+  67   1          RH3    = HIBYTE(65536 - (1000000/u32Baudrate)-1);         /*16 MHz */
+  68   1          RL3    = LOBYTE(65536 - (1000000/u32Baudrate)-1);           /*16 MHz */
+  69   1          set_TR3;         //Trigger Timer3
+  70   1      }
+  71          
+  72          UINT8 Receive_Data_From_UART0(void)
+  73          {
+  74   1          UINT8 c;
+  75   1          
+  76   1          while (!RI);
+  77   1          c = SBUF;
+  78   1          RI = 0;
+  79   1          return (c);
+  80   1      }
+  81          
+  82          void Send_Data_To_UART0 (UINT8 c)
+  83          {
+  84   1          TI = 0;
+  85   1          SBUF = c;
+  86   1          while(TI==0);
+  87   1      }
+  88          
+  89          
+  90          //---------------------------------------------------------------
+  91          void InitialUART1_Timer3(UINT32 u32Baudrate) //use timer3 as Baudrate generator
+  92          {
+  93   1          P02_Quasi_Mode;
+  94   1          P16_Quasi_Mode;
+  95   1          
+  96   1          SCON_1 = 0x52;   //UART1 Mode1,REN_1=1,TI_1=1
+  97   1          T3CON &= 0xF8;   //T3PS2=0,T3PS1=0,T3PS0=0(Prescale=1)
+  98   1      #ifdef FOSC_110592
+                  RH3    = HIBYTE(65536 - (691200/u32Baudrate));  /*11.0592 MHz */
+                  RL3    = LOBYTE(65536 - (691200/u32Baudrate));  /*11.0592 MHz */
+              #endif
+ 102   1      #ifdef FOSC_184320
+                  RH3    = HIBYTE(65536 - (1152000/u32Baudrate)); /*18.4320 MHz */
+                  RL3    = LOBYTE(65536 - (1152000/u32Baudrate)); /*18.4320 MHz */
+              #endif
+ 106   1      #ifdef FOSC_160000
+ 107   1          RH3    = HIBYTE(65536 - (1000000/u32Baudrate)-1);       /*16 MHz */
+ 108   1          RL3    = LOBYTE(65536 - (1000000/u32Baudrate)-1);       /*16 MHz */
+ 109   1      #endif
+C51 COMPILER V9.56.0.0   COMMON                                                            03/10/2020 18:55:27 PAGE 3   
+
+ 110   1      #ifdef FOSC_200000
+                  RH3    = HIBYTE(65536 - (1250000/u32Baudrate)); /*20.0000 MHz */
+                  RL3    = LOBYTE(65536 - (1250000/u32Baudrate)); /*20.0000 MHz */
+              #endif
+ 114   1      #ifdef FOSC_221184
+ 115   1          RH3    = HIBYTE(65536 - (1382400/u32Baudrate));     /*22.1184 MHz */
+ 116   1          RL3    = LOBYTE(65536 - (1382400/u32Baudrate));     /*22.1184 MHz */
+ 117   1      #endif
+ 118   1          set_TR3;         //Trigger Timer3
+ 119   1      }
+ 120          
+ 121          UINT8 Receive_Data_From_UART1(void)
+ 122          {
+ 123   1          UINT8 c;
+ 124   1          
+ 125   1          while (!RI_1);
+ 126   1          c = SBUF_1;
+ 127   1          RI_1 = 0;
+ 128   1          return (c);
+ 129   1      }
+ 130          
+ 131          void Send_Data_To_UART1 (UINT8 c)
+ 132          {
+ 133   1          TI_1 = 0;
+ 134   1          SBUF_1 = c;
+ 135   1          while(TI_1==0);
+ 136   1      }
+ 137          
+ 138          
+ 139          /*==========================================================================*/
+ 140          #ifdef SW_Reset
+              void SW_Reset(void)
+              {
+                  TA = 0xAA;
+                  TA = 0x55;
+                  set_SWRST;
+              }
+              #endif
+ 148          /*==========================================================================*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    535    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      12
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

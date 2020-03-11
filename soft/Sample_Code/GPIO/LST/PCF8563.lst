@@ -1,0 +1,204 @@
+C51 COMPILER V9.56.0.0   PCF8563                                                           11/20/2019 19:33:06 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE PCF8563
+OBJECT MODULE PLACED IN .\Output\PCF8563.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\PCF8563.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\..\Include) DEFINE(FOS
+                    -C_160000) DEBUG OBJECTEXTEND PRINT(.\LST\PCF8563.lst) OBJECT(.\Output\PCF8563.obj)
+
+line level    source
+
+   1          /********************I2C************************************/
+   2          #define I2C_SDA_LOW()
+   3          #define I2C_SCL_LOW()
+   4          #define I2C_SDA_HIGH()
+   5          #define I2C_SCL_HIGH()
+   6          #define I2C_SDA_Read()
+   7          
+   8          static void I2C_Delay(void)
+   9          {
+  10   1          //实现延时4us
+  11   1      }
+  12          
+  13          static void I2C_Start(void)
+  14          {
+  15   1          I2C_SDA_HIGH();
+  16   1          I2C_SCL_HIGH();
+  17   1          I2C_Delay();
+  18   1          I2C_SDA_LOW();
+  19   1          I2C_Delay();
+  20   1          I2C_SCL_LOW();
+  21   1          I2C_Delay();
+  22   1      }
+  23          
+  24          static void I2C_Stop()
+  25          {
+  26   1          I2C_SDA_LOW();
+  27   1          I2C_SCL_HIGH();
+  28   1          I2C_Delay();
+  29   1          I2C_SDA_HIGH();
+  30   1          I2C_Delay();
+  31   1      }
+  32          
+  33          static unsigned char I2C_WaitAck(void)
+  34          {
+  35   1          I2C_SDA_HIGH();
+  36   1          I2C_SCL_HIGH();
+  37   1          I2C_Delay();
+  38   1      //    if ( I2C_SDA_Read() ){
+  39   1      //              return 1;
+  40   1      //      }
+  41   1          I2C_SCL_LOW();
+  42   1          I2C_Delay();
+  43   1          return 0;
+  44   1      }
+  45          
+  46          static void I2C_SendAck(void)
+  47          {
+  48   1          I2C_SDA_LOW();
+  49   1          I2C_Delay();
+  50   1          I2C_SCL_HIGH();
+  51   1          I2C_Delay();
+  52   1          I2C_SCL_LOW();
+  53   1          I2C_Delay();
+  54   1      }
+C51 COMPILER V9.56.0.0   PCF8563                                                           11/20/2019 19:33:06 PAGE 2   
+
+  55          
+  56          static void I2C_SendNoAck(void)
+  57          {
+  58   1          I2C_SDA_HIGH();
+  59   1          I2C_Delay();   
+  60   1          I2C_SCL_HIGH();
+  61   1          I2C_Delay();
+  62   1          I2C_SCL_LOW();
+  63   1          I2C_Delay();
+  64   1      }
+  65          
+  66          static void I2C_SendByte(unsigned char Byte)
+  67          {
+  68   1          unsigned char Cnt;
+  69   1          for(Cnt=0;Cnt<8;Cnt++)
+  70   1          {
+  71   2              if(Byte&0x80)
+  72   2              {
+  73   3                  I2C_SDA_HIGH();
+  74   3              }
+  75   2              else
+  76   2              {
+  77   3                  I2C_SDA_LOW();
+  78   3              }
+  79   2              Byte<<=1;
+  80   2              I2C_Delay();
+  81   2              I2C_SCL_HIGH();
+  82   2              I2C_Delay();
+  83   2              I2C_SCL_LOW();
+  84   2              I2C_Delay();
+  85   2          }
+  86   1      }
+  87          
+  88          static unsigned char I2C_ReceiveByte(void)
+  89          {
+  90   1          unsigned char Cnt,Byte=0;
+  91   1          I2C_SDA_HIGH();
+  92   1          for(Cnt=0;Cnt<8;Cnt++)
+  93   1          {
+  94   2              Byte<<=1;
+  95   2              I2C_SCL_HIGH();
+  96   2              I2C_Delay();
+  97   2      //        if(I2C_SDA_Read())
+  98   2      //            Byte++;
+  99   2              I2C_Delay();
+ 100   2              I2C_SCL_LOW();
+ 101   2              I2C_Delay();
+ 102   2          }
+ 103   1          return Byte;
+ 104   1      }
+ 105          
+ 106          
+ 107          /****************************PCF8563**********************************/
+ 108          /*
+ 109          PCF8563有16个8位的寄存器
+ 110          寄存器地址(16进制):
+ 111          00:控制状态寄存器1
+ 112          01:控制状态寄存器2
+ 113          02:秒寄存器(BCD数据格式,其中最高位表示数据的准确性0:数据准确,1:数据可能是错
+             -的,[6:0]才是数据内容)
+ 114          03:分钟寄存器(BCD数据格式,最高位无效)
+ 115          04:小时寄存器(BCD数据格式,只有[5:0]才是有效数据)
+C51 COMPILER V9.56.0.0   PCF8563                                                           11/20/2019 19:33:06 PAGE 3   
+
+ 116          05:日期寄存器(BCD数据格式,只有[5:0]才是有效数据)
+ 117          06:星期寄存器([2:0]才是有效数据 保存的是0~6,的二进制值非BCD编码)
+ 118          07:月/世纪寄存器(最高位为1时表示现在是20世纪19xx年,为0时表示21世纪20xx年,[4:0]�
+             -�是BCD格式保存月份 其余位无效)
+ 119          08:年寄存器(全部都是有效数据BCD数据格式保存19xx/20xx的xx的值)
+ 120          09:分钟报警值//以下的寄存器未用到
+ 121          0a:小时报警
+ 122          0b:日期报警
+ 123          0c:星期报警
+ 124          0d:
+ 125          0e:
+ 126          0f:
+ 127          */
+ 128          
+ 129          #define PCF8563_Read    0xa3
+ 130          #define PCF8563_Write    0xa2
+ 131          unsigned char PCF8563_SendByte(unsigned char Reg,unsigned char RegVal)
+ 132          {
+ 133   1          //Reg 是寄存器的地址
+ 134   1          //RegVal 是要写进寄存器的值
+ 135   1          //0 成功 1  失败
+ 136   1          I2C_Start();
+ 137   1          I2C_SendByte(PCF8563_Write);
+ 138   1          if(I2C_WaitAck())
+ 139   1              return 1;
+ 140   1          I2C_SendByte(Reg);
+ 141   1          if(I2C_WaitAck())
+ 142   1              return 1;
+ 143   1          I2C_SendByte(RegVal);
+ 144   1          if(I2C_WaitAck())
+ 145   1              return 1;
+ 146   1          I2C_Stop();
+ 147   1          return 0;
+ 148   1      }
+ 149          
+ 150          unsigned char PCF8563_ReceiveByte(unsigned char Reg,unsigned char *RegVal)
+ 151          {
+ 152   1          //Reg 要读的寄存器的地址
+ 153   1          //RegVal 读出来的数据保存的地址
+ 154   1          // 0 成功  1失败
+ 155   1          I2C_Start();
+ 156   1          I2C_SendByte(PCF8563_Write);
+ 157   1          if(I2C_WaitAck())
+ 158   1              return 1;
+ 159   1          I2C_SendByte(Reg);
+ 160   1          if(I2C_WaitAck())
+ 161   1              return 1;
+ 162   1          I2C_Start();
+ 163   1          I2C_SendByte(PCF8563_Read);
+ 164   1          if(I2C_WaitAck())
+ 165   1              return 1;
+ 166   1          *RegVal=I2C_ReceiveByte();
+ 167   1          I2C_SendNoAck();
+ 168   1          I2C_Stop();
+ 169   1          return 0;
+ 170   1      }
+ 171          
+ 172          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    185    ----
+C51 COMPILER V9.56.0.0   PCF8563                                                           11/20/2019 19:33:06 PAGE 4   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

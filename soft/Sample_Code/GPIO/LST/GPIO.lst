@@ -1,0 +1,242 @@
+C51 COMPILER V9.56.0.0   GPIO                                                              03/10/2020 21:21:31 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE GPIO
+OBJECT MODULE PLACED IN .\Output\GPIO.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Code\GPIO.C OPTIMIZE(8,SPEED) BROWSE INCDIR(..\..\Include) DEFINE(FOSC_1
+                    -60000) DEBUG OBJECTEXTEND PRINT(.\LST\GPIO.lst) OBJECT(.\Output\GPIO.obj)
+
+line level    source
+
+   1          #include "N76E003.h"
+   2          #include "SFR_Macro.h"
+   3          #include "Function_define.h"
+   4          #include "Common.h"
+   5          #include "Delay.h"
+   6          
+   7          #define row1 P00
+   8          #define row2 P01
+   9          #define row3 P02
+  10          #define row4 P03
+  11          #define row5 P04
+  12          
+  13          #define col1 P10
+  14          #define col2 P11
+  15          #define col3 P12
+  16          #define col4 P13
+  17          #define col5 P14
+  18          #define col6 P15
+  19          #define col7 P16
+  20          #define col8 P17
+  21          
+  22          unsigned char xdata ADCdataH[20], ADCdataL[20];
+  23          UINT8 ADCsumH, ADCsumL;
+  24          unsigned int i, while_times = 0;
+  25          float ADCavg, ButterymV;
+  26          
+  27          unsigned int beforeAlready_9V = 0;       //之前已经有9V
+  28          unsigned int beforeAlready_6300mV = 0; //之前已经有6.3V
+  29          
+  30          unsigned int WorkVoltageIsOK = 0;
+  31          
+  32          //void Timer0_ISR(void) interrupt 1 //interrupt address is 0x000B
+  33          //{                                                               // 8192/(16000000/12) = 0.006144s = 6.144ms
+  34          
+  35          //}
+  36          UINT8 tttt = 0;
+  37          UINT16 TH1_INIT = 65535;                  // 系统时钟     16000 / 16000000 = 0.001s
+  38                                                                            // 系统时钟1/12 1333 / 1333333 = 0.001s
+  39          void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
+  40          {
+  41   1              TH1 = (65536 - TH1_INIT) / 256;
+  42   1              TL1 = (65536 - TH1_INIT) % 256;
+  43   1              // P04 = ~P04;
+  44   1              Send_Data_To_UART0(P0);
+  45   1      
+  46   1              // row1到row5依次置位
+  47   1              P0 =0xE0;
+  48   1              P0 |= (1 << tttt);
+  49   1              tttt++;
+  50   1              if (tttt == 6)
+  51   1              {
+  52   2                      tttt = 0;
+  53   2              }
+  54   1              
+C51 COMPILER V9.56.0.0   GPIO                                                              03/10/2020 21:21:31 PAGE 2   
+
+  55   1              // 判断col1到col8的状态
+  56   1              Send_Data_To_UART0(P1);
+  57   1      
+  58   1      }
+  59          
+  60          void main(void)
+  61          {
+  62   1              ///////////////////////////////////WDT///////////////////////////////////////
+  63   1              TA = 0xAA;
+  64   1              TA = 0x55;
+  65   1              WDCON = 0x07; //Setting WDT prescale
+  66   1              set_WDTR;        //WDT run
+  67   1              set_WDCLR;      //Clear WDT timer
+  68   1              set_EWDT;
+  69   1              EA = 1;
+  70   1              //set_WIDPD;
+  71   1              /////////////////////////////////////////////////////////////////////////////
+  72   1      
+  73   1              Set_All_GPIO_Quasi_Mode; // Define in Function_define.h
+  74   1              // P00_PushPull_Mode;
+  75   1              // P10_PushPull_Mode;
+  76   1              // P11_PushPull_Mode;
+  77   1              // P12_PushPull_Mode;
+  78   1              // P00 = 0;
+  79   1              // P10 = 0;
+  80   1              // P11 = 0;
+  81   1              // P12 = 0;
+  82   1      P0=0xe0;
+  83   1      P1=0x00;
+  84   1      P10_Input_Mode;
+  85   1      P11_Input_Mode;
+  86   1      P12_Input_Mode;
+  87   1      P13_Input_Mode;
+  88   1      P14_Input_Mode;
+  89   1      P15_Input_Mode;
+  90   1      P16_Input_Mode;
+  91   1      P17_Input_Mode;
+  92   1              // P03_PushPull_Mode;
+  93   1              // P03_Quasi_Mode;
+  94   1              // P30_PushPull_Mode;
+  95   1      
+  96   1              // P04_Input_Mode;
+  97   1              // P04_Quasi_Mode;
+  98   1              // P04_PushPull_Mode;
+  99   1      
+ 100   1              // TIMER0_MODE0_ENABLE;
+ 101   1              // set_ET0; //enable Timer0 interrupt
+ 102   1              // set_EA;  //enable interrupts
+ 103   1              // set_TR0; //Timer0 run
+ 104   1      
+ 105   1              TIMER1_MODE1_ENABLE;
+ 106   1              // set_T1M;
+ 107   1              TH1 = (65536 - TH1_INIT) / 256;
+ 108   1              TL1 = (65536 - TH1_INIT) % 256;
+ 109   1              set_ET1; //enable Timer1 interrupt
+ 110   1              set_EA;  //enable interrupts
+ 111   1              set_TR1; //Timer1 run
+ 112   1      
+ 113   1              InitialUART0_Timer3(115200);
+ 114   1              // Enable_ADC_AIN1; // Enable AIN0 as ADC input, Find in "Function_define.h" - "ADC INIT"
+ 115   1              // Enable_ADC_AIN7;
+ 116   1      
+C51 COMPILER V9.56.0.0   GPIO                                                              03/10/2020 21:21:31 PAGE 3   
+
+ 117   1              while (1)
+ 118   1              {
+ 119   2                      set_WDCLR; // 喂狗
+ 120   2      
+ 121   2                      // P04 = ~P04;
+ 122   2              }
+ 123   1      
+ 124   1              //
+ 125   1              //      while (1)
+ 126   1              //      {
+ 127   1              //              while_times++;
+ 128   1              //              set_WDCLR; // 喂狗
+ 129   1      
+ 130   1              //              clr_ADCF;
+ 131   1              //              set_ADCS; // ADC start trig signal
+ 132   1              //              while (ADCF == 0)
+ 133   1              //                      ;
+ 134   1              //              ADCdataH[ADCsumH] = ADCRH;
+ 135   1              //              ADCdataL[ADCsumL] = ADCRL;
+ 136   1              //              ADCsumH++;
+ 137   1              //              ADCsumL++;
+ 138   1              //              if (ADCsumH == 20)
+ 139   1              //              {
+ 140   1              //                      ADCsumH = 0;
+ 141   1              //                      ADCsumL = 0;
+ 142   1              //                      for (i = 0; i < 20; i++)
+ 143   1              //                      {
+ 144   1              //                              ADCavg = ADCavg + (ADCdataH[i] * 16 + ADCdataL[i]);
+ 145   1              //                      }
+ 146   1              //                      ADCavg = ADCavg / 20;
+ 147   1              //                      ButterymV = 10000 * ADCavg / 4096;
+ 148   1              //                      ADCavg = 0;
+ 149   1              //              }
+ 150   1              //
+ 151   1      
+ 152   1              //
+ 153   1      
+ 154   1              //
+ 155   1              //              if (ButterymV > 7800)
+ 156   1              //              {
+ 157   1              //                      beforeAlready_9V = 1;
+ 158   1              //              }
+ 159   1              //              if (ButterymV < 7800)
+ 160   1              //              {
+ 161   1              //              }
+ 162   1              //              if (ButterymV >= 6300)
+ 163   1              //              {
+ 164   1              //                      WorkVoltageIsOK = 1;
+ 165   1              //                      beforeAlready_6300mV = 1;
+ 166   1      
+ 167   1              //              }
+ 168   1              //              if (ButterymV < 6000)
+ 169   1              //              {
+ 170   1              //                      // if (!beforeAlready_6300mV) { //防止电压跳变的时候触发断水保护
+ 171   1              //                              WorkVoltageIsOK = 0;
+ 172   1              //                      // }
+ 173   1              //              }
+ 174   1      
+ 175   1              //
+ 176   1              //              Timer1_Delay1ms(1);
+ 177   1              //#if 0
+ 178   1              //              if (while_times % 50 == 0)
+C51 COMPILER V9.56.0.0   GPIO                                                              03/10/2020 21:21:31 PAGE 4   
+
+ 179   1              //              {
+ 180   1              //                      printf("\n%f s", loop_flush / 163.0);
+ 181   1              //                      printf("\nAllOff: %d", loopFlushAllOff);
+ 182   1              //
+ 183   1              //                      printf("\nButtery: %0.0f mV\n", ButterymV);
+ 184   1      
+ 185   1              //                      if (A_is_open)
+ 186   1              //                              printf("A:1  ");
+ 187   1              //                      else
+ 188   1              //                              printf("A:0  ");
+ 189   1      
+ 190   1              //                      if (B_is_open)
+ 191   1              //                              printf("B:1\n");
+ 192   1              //                      else
+ 193   1              //                              printf("B:0\n");
+ 194   1      
+ 195   1              //                      if (LED)
+ 196   1              //                              printf("LED: 1\n");
+ 197   1              //                      else
+ 198   1              //                              printf("LED: 0\n");
+ 199   1      
+ 200   1              //                      if (Start)
+ 201   1              //                              printf("start: 1\n");
+ 202   1              //                      else
+ 203   1              //                              printf("start: 0\n");
+ 204   1      
+ 205   1              //                      if (hold)
+ 206   1              //                              printf("hold:  1\n");
+ 207   1              //                      else
+ 208   1              //                              printf("hold:  0\n");
+ 209   1              //              }
+ 210   1              //#endif
+ 211   1              //      }
+ 212   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    399    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     40    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     23    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
