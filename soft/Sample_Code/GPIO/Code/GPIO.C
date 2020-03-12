@@ -19,21 +19,15 @@
 #define col7 P16
 #define col8 P17
 
-unsigned char xdata ADCdataH[20], ADCdataL[20];
-UINT8 ADCsumH, ADCsumL;
-unsigned int i, while_times = 0;
-float ADCavg, ButterymV;
-
-//void Timer0_ISR(void) interrupt 1 //interrupt address is 0x000B
-//{								  // 8192/(16000000/12) = 0.006144s = 6.144ms
-
-//}
+unsigned int i;
 unsigned char xdata beforeAllKey[5]; // 40个位，保存所有40个建的状态
 unsigned char xdata allKey[5];		 // 40个位，保存所有40个建的状态
 
 UINT8 tttt = 0;
-UINT16 TH1_INIT = 60000;		  // 系统时钟     16000 / 16000000 = 0.001s
-								  // 系统时钟1/12 1333 / 1333333 = 0.001s
+UINT16 TH1_INIT = 60000;
+
+// 系统时钟      16000 / 16000000 = 0.001s
+// 系统时钟1/12  1333  / 1333333  = 0.001s
 void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 {
 	TH1 = (65536 - TH1_INIT) / 256;
@@ -99,10 +93,6 @@ void main(void)
 	P03_PushPull_Mode;
 	P04_PushPull_Mode;
 
-	// TIMER0_MODE0_ENABLE;
-	// set_ET0; //enable Timer0 interrupt
-	// set_EA;  //enable interrupts
-	// set_TR0; //Timer0 run
 
 	TIMER1_MODE1_ENABLE;
 	// set_T1M;
@@ -122,93 +112,4 @@ void main(void)
 
 		// P04 = ~P04;
 	}
-
-	//
-	//	while (1)
-	//	{
-	//		while_times++;
-	//		set_WDCLR; // 喂狗
-
-	//		clr_ADCF;
-	//		set_ADCS; // ADC start trig signal
-	//		while (ADCF == 0)
-	//			;
-	//		ADCdataH[ADCsumH] = ADCRH;
-	//		ADCdataL[ADCsumL] = ADCRL;
-	//		ADCsumH++;
-	//		ADCsumL++;
-	//		if (ADCsumH == 20)
-	//		{
-	//			ADCsumH = 0;
-	//			ADCsumL = 0;
-	//			for (i = 0; i < 20; i++)
-	//			{
-	//				ADCavg = ADCavg + (ADCdataH[i] * 16 + ADCdataL[i]);
-	//			}
-	//			ADCavg = ADCavg / 20;
-	//			ButterymV = 10000 * ADCavg / 4096;
-	//			ADCavg = 0;
-	//		}
-	//
-
-	//
-
-	//
-	//		if (ButterymV > 7800)
-	//		{
-	//			beforeAlready_9V = 1;
-	//		}
-	//		if (ButterymV < 7800)
-	//		{
-	//		}
-	//		if (ButterymV >= 6300)
-	//		{
-	//			WorkVoltageIsOK = 1;
-	//			beforeAlready_6300mV = 1;
-
-	//		}
-	//		if (ButterymV < 6000)
-	//		{
-	//			// if (!beforeAlready_6300mV) { //防止电压跳变的时候触发断水保护
-	//				WorkVoltageIsOK = 0;
-	//			// }
-	//		}
-
-	//
-	//		Timer1_Delay1ms(1);
-	//#if 0
-	//		if (while_times % 50 == 0)
-	//		{
-	//			printf("\n%f s", loop_flush / 163.0);
-	//			printf("\nAllOff: %d", loopFlushAllOff);
-	//
-	//			printf("\nButtery: %0.0f mV\n", ButterymV);
-
-	//			if (A_is_open)
-	//				printf("A:1  ");
-	//			else
-	//				printf("A:0  ");
-
-	//			if (B_is_open)
-	//				printf("B:1\n");
-	//			else
-	//				printf("B:0\n");
-
-	//			if (LED)
-	//				printf("LED: 1\n");
-	//			else
-	//				printf("LED: 0\n");
-
-	//			if (Start)
-	//				printf("start: 1\n");
-	//			else
-	//				printf("start: 0\n");
-
-	//			if (hold)
-	//				printf("hold:  1\n");
-	//			else
-	//				printf("hold:  0\n");
-	//		}
-	//#endif
-	//	}
 }
