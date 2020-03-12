@@ -28,8 +28,8 @@ float ADCavg, ButterymV;
 //{								  // 8192/(16000000/12) = 0.006144s = 6.144ms
 
 //}
-
-unsigned char xdata allKey[5]; // 40个位，保存所有40个建的状态
+unsigned char xdata beforeAllKey[5]; // 40个位，保存所有40个建的状态
+unsigned char xdata allKey[5];		 // 40个位，保存所有40个建的状态
 
 UINT8 tttt = 0;
 UINT16 TH1_INIT = 60000;		  // 系统时钟     16000 / 16000000 = 0.001s
@@ -41,12 +41,15 @@ void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 
 	// row1到row5依次拉低
 	P0 = 0xFF;
-	if (tttt == 5)	//所有键扫描完成
+	if (tttt == 5) //所有键扫描完成
 	{
 		tttt = 0;
-		for (i = 0; i < 5; i++)
+		if (memcmp(beforeAllKey, allKey, 5) != 0)
 		{
-			Send_Data_To_UART0(allKey[i]);
+			for (i = 0; i < 5; i++)
+			{
+				Send_Data_To_UART0(allKey[i]);
+			}
 		}
 	}
 	else
@@ -63,10 +66,10 @@ void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 			P04 = 0;
 
 		allKey[tttt] = ~P1;
-		
+
 		// Send_Data_To_UART0(tttt);
 		// Send_Data_To_UART0(P0);
-		
+
 		// // 判断col1到col8的状态
 		// // Send_Data_To_UART0(~P1);
 		// Send_Data_To_UART0(allKey[tttt]);
@@ -89,7 +92,7 @@ void main(void)
 	/////////////////////////////////////////////////////////////////////////////
 
 	Set_All_GPIO_Quasi_Mode;
-	
+
 	P00_PushPull_Mode;
 	P01_PushPull_Mode;
 	P02_PushPull_Mode;
