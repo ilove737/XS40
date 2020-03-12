@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "Delay.h"
 #include <string.h>
+#include "keyScanCode.h"
 
 #define row1 P00
 #define row2 P01
@@ -27,11 +28,11 @@ unsigned char xdata allKey[5];		 // 40个位，保存当前所有40个建的状�
 unsigned char xdata HIDFrames[8];
 
 UINT8 tttt = 0;
-UINT16 TH1_INIT = 60000;
+UINT16 TH1_INIT = 1333;
 
 void makeHIDFrames(void)
 {
-	if (allKey[0] = 0 && allKey[1] = 0 && allKey[2] = 0 && allKey[3] = 0 && allKey[4] = 0)
+	if (allKey[0] == 0 && allKey[1] == 0 && allKey[2] == 0 && allKey[3] == 0 && allKey[4] == 0)
 	{
 		for (i = 0; i < 8; i++)
 		{
@@ -64,24 +65,23 @@ void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
 			// Send_Data_To_UART0(allKey[i]);
 		}
 	}
-}
-else
-{
-	if (tttt == 0)
-		P00 = 0;
-	if (tttt == 1)
-		P01 = 0;
-	if (tttt == 2)
-		P02 = 0;
-	if (tttt == 3)
-		P03 = 0;
-	if (tttt == 4)
-		P04 = 0;
+	else
+	{
+		if (tttt == 0)
+			P00 = 0;
+		if (tttt == 1)
+			P01 = 0;
+		if (tttt == 2)
+			P02 = 0;
+		if (tttt == 3)
+			P03 = 0;
+		if (tttt == 4)
+			P04 = 0;
 
-	allKey[tttt] = ~P1;
+		allKey[tttt] = ~P1;
 
-	tttt++;
-}
+		tttt++;
+	}
 }
 
 void main(void)
