@@ -28,7 +28,7 @@ unsigned char xdata allKey[5];		 // 40个位，保存当前所有40个建的状�
 unsigned char xdata HIDFrames[8];
 
 UINT8 tttt = 0;
-UINT16 TH1_INIT = 1333;
+UINT16 TH1_INIT = 333;
 
 void makeHIDFrames(void)
 {
@@ -41,7 +41,7 @@ void makeHIDFrames(void)
 	}
 	else
 	{
-		Send_Data_To_UART0(0x01);
+		Send_Data_To_UART0(allKey[0]);
 	}
 }
 

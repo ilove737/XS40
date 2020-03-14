@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name XS40-rescue)(type Legacy)(uri ${KIPRJMOD}/XS40-rescue.lib)(options "")(descr ""))
+)
