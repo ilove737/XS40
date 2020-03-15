@@ -1,5 +1,4 @@
-
-//Keybord keyvalue define
+// Keybord keyvalue define
 #define KEY_NULL 0x00          // NULL
 #define KEY_A 0x04             // A
 #define KEY_B 0x05             // B
@@ -102,13 +101,14 @@
 #define KEY_RELEASED 0x01
 // Control
 #define KEY_LCTRL 0xE0  // left ctrl // #define KEY_LCTRL 0x01
+#define KEY_LSHIFT 0xE1 // left Shift // #define KEY_LSHFIT 0x02
 #define KEY_LALT 0xE2   // left Alt // #define KEY_LALT 0x04
-#define KEY_LSHFIT 0xE1 // left Shift // #define KEY_LSHFIT 0x02
-#define KEY_LWIN 0xE3   // left windows // #define KEY_LWIN 0x08
-#define KEY_RWIN 0xE7   // right windows // #define KEY_RWIN 0x80
+#define KEY_LGUI 0xE3   // left windows // #define KEY_LWIN 0x08
+#define KEY_RCTRL 0xE4  // right Ctrl // #define KEY_RCTRL 0x10
 #define KEY_RSHIFT 0xE5 // right Shift // #define KEY_RSHIFT 0x20
 #define KEY_RALT 0xE6   // right Alt // #define KEY_RALT 0x40
-#define KEY_RCTRL 0xE4  // right Ctrl // #define KEY_RCTRL 0x10
+#define KEY_RGUI 0xE7   // right windows // #define KEY_RWIN 0x80
+
 #define KEY_APP 0x65    // Application // #define KEY_APP 0x65
 #define KEY_K14 0x89    // international key
 #define KEY_KR_L 0x91
@@ -120,3 +120,16 @@
 #define KEY_K133 0x88
 #define KEY_K56 0x87
 #define KEY_KR_R 0x90
+
+/**
+ * Modifier masks - used for the first byte in the HID report.
+ * NOTE: The second byte in the report is reserved, 0x00
+ */
+#define KEY_MOD_LCTRL  0x01
+#define KEY_MOD_LSHIFT 0x02
+#define KEY_MOD_LALT   0x04
+#define KEY_MOD_LGUI   0x08
+#define KEY_MOD_RCTRL  0x10
+#define KEY_MOD_RSHIFT 0x20
+#define KEY_MOD_RALT   0x40
+#define KEY_MOD_RGUI   0x80

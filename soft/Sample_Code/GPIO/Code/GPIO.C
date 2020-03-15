@@ -4,34 +4,41 @@
 #include "Common.h"
 #include "Delay.h"
 #include <string.h>
-#include "keyScanCode.h"
+#include "keyMap.h"
 
-#define row1 P00
-#define row2 P01
-#define row3 P02
-#define row4 P03
-#define row5 P04
+// #define row1 P00
+// #define row2 P01
+// #define row3 P02
+// #define row4 P03
+// #define row5 P04
 
-#define col1 P10
-#define col2 P11
-#define col3 P12
-#define col4 P13
-#define col5 P14
-#define col6 P15
-#define col7 P16
-#define col8 P17
+// #define col1 P10
+// #define col2 P11
+// #define col3 P12
+// #define col4 P13
+// #define col5 P14
+// #define col6 P15
+// #define col7 P16
+// #define col8 P17
 
-unsigned int i;
+unsigned int i, j;
 unsigned char xdata beforeAllKey[5]; // 40个位，保存上一次所有40个建的状态
 unsigned char xdata allKey[5];		 // 40个位，保存当前所有40个建的状态
 
+unsigned int kCode;
 unsigned char xdata HIDFrames[8];
+unsigned int HIDFramesPointer = 2;
 
 UINT8 tttt = 0;
 UINT16 TH1_INIT = 333;
 
 void makeHIDFrames(void)
 {
+	HIDFramesPointer = 2;
+	for (i = 0; i < 8; i++)
+	{
+		HIDFrames[i] = 0;
+	}
 	if (allKey[0] == 0 && allKey[1] == 0 && allKey[2] == 0 && allKey[3] == 0 && allKey[4] == 0)
 	{
 		for (i = 0; i < 8; i++)
@@ -41,7 +48,33 @@ void makeHIDFrames(void)
 	}
 	else
 	{
-		Send_Data_To_UART0(allKey[0]);
+		for (i = 0; i < 5; i++)
+		{
+			if (allKey[i] != 0)
+			{
+				for (j = 0; j < 8; j++)
+				{
+					if (allKey[i] >> j & 1)
+					{
+						kCode = keyMap[i * 8 + j];
+						// if (kCode == KEY_LCTRL | kCode == KEY_LSHIFT | kCode == KEY_LALT | kCode == KEY_LGUI | kCode == KEY_RCTRL | kCode == KEY_RSHIFT | kCode == KEY_RALT | kCode == KEY_RGUI)
+						if (kCode >= 0xE0)  // Control
+						{
+							HIDFrames[0] += 0X01 << (kCode & 0X0F);
+						}
+						else
+						{
+							HIDFrames[HIDFramesPointer] = kCode;
+							HIDFramesPointer++;
+						}
+					}
+				}
+			}
+		}
+		for (i = 0; i < 8; i++)
+		{
+			Send_Data_To_UART0(HIDFrames[i]);
+		}
 	}
 }
 
