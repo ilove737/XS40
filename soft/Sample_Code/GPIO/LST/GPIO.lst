@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   GPIO                                                              03/22/2020 20:32:29 PAGE 1   
+C51 COMPILER V9.56.0.0   GPIO                                                              03/22/2020 22:22:30 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE GPIO
@@ -37,7 +37,7 @@ line level    source
   27          
   28          unsigned int kCode;
   29          unsigned char xdata HIDFrames[8];
-  30          unsigned int HIDFramesPointer = 2;
+  30          unsigned int HIDFramesPointer = 2;      // 从帧的第三个字节开始添加普通按键的KeyCode
   31          
   32          UINT8 tttt = 0;
   33          UINT16 TH1_INIT = 333;
@@ -50,19 +50,19 @@ line level    source
   40   2                      HIDFrames[i] = 0;
   41   2              }
   42   1              if (allKey[0] == 0 && allKey[1] == 0 && allKey[2] == 0 && allKey[3] == 0 && allKey[4] == 0)
-  43   1              {
+  43   1              {       // 所有按键都是松开的状态
   44   2                      for (i = 0; i < 8; i++)
   45   2                      {
   46   3                              Send_Data_To_UART0(0x00);
   47   3                      }
   48   2              }
   49   1              else
-  50   1              {
+  50   1              {       // 有按键按下的状态
   51   2                      for (i = 0; i < 5; i++)
   52   2                      {
   53   3                              if (allKey[i] != 0)
   54   3                              {
-C51 COMPILER V9.56.0.0   GPIO                                                              03/22/2020 20:32:29 PAGE 2   
+C51 COMPILER V9.56.0.0   GPIO                                                              03/22/2020 22:22:30 PAGE 2   
 
   55   4                                      for (j = 0; j < 8; j++)
   56   4                                      {
@@ -126,7 +126,7 @@ line level    source
  113   2      
  114   2                      allKey[tttt] = ~P1;
  115   2      
-C51 COMPILER V9.56.0.0   GPIO                                                              03/22/2020 20:32:29 PAGE 3   
+C51 COMPILER V9.56.0.0   GPIO                                                              03/22/2020 22:22:30 PAGE 3   
 
  116   2                      tttt++;
  117   2              }

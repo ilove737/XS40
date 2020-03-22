@@ -27,7 +27,7 @@ unsigned char xdata allKey[5];		 // 40个位，保存当前所有40个建的状�
 
 unsigned int kCode;
 unsigned char xdata HIDFrames[8];
-unsigned int HIDFramesPointer = 2;
+unsigned int HIDFramesPointer = 2;	// 从帧的第三个字节开始添加普通按键的KeyCode
 
 UINT8 tttt = 0;
 UINT16 TH1_INIT = 333;
@@ -40,14 +40,14 @@ void makeHIDFrames(void)
 		HIDFrames[i] = 0;
 	}
 	if (allKey[0] == 0 && allKey[1] == 0 && allKey[2] == 0 && allKey[3] == 0 && allKey[4] == 0)
-	{
+	{	// 所有按键都是松开的状态
 		for (i = 0; i < 8; i++)
 		{
 			Send_Data_To_UART0(0x00);
 		}
 	}
 	else
-	{
+	{	// 有按键按下的状态
 		for (i = 0; i < 5; i++)
 		{
 			if (allKey[i] != 0)
