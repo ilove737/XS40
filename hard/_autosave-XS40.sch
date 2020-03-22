@@ -2149,4 +2149,15 @@ Wire Wire Line
 Connection ~ 1900 5150
 Wire Wire Line
 	1900 5150 1900 4850
+$Comp
+L Connector:USB_C_Plug P44
+U 1 1 5E7A39F3
+P 6750 5100
+F 0 "P44" H 6857 6367 50  0000 C CNN
+F 1 "USB_C_Plug" H 6857 6276 50  0000 C CNN
+F 2 "" H 6900 5100 50  0001 C CNN
+F 3 "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" H 6900 5100 50  0001 C CNN
+	1    6750 5100
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
