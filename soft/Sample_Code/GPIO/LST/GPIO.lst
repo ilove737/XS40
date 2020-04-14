@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   GPIO                                                              03/26/2020 22:55:56 PAGE 1   
+C51 COMPILER V9.56.0.0   GPIO                                                              04/14/2020 22:17:38 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE GPIO
@@ -31,159 +31,194 @@ line level    source
   21          // #define col7 P16
   22          // #define col8 P17
   23          
-  24          unsigned int i, j;
-  25          unsigned char xdata beforeAllKey[5]; // 40个位，保存上一次所有40个建的状态
-  26          unsigned char xdata allKey[5];           // 40个位，保存当前所有40个建的状态
+  24          UINT8 xdata i, j;
+  25          UINT8 xdata beforeAllKey[5]; // 40个位，保存上一次所有40个建的状态
+  26          UINT8 xdata allKey[5];           // 40个位，保存当前所有40个建的状态
   27          
-  28          unsigned int kCode;
-  29          unsigned char xdata HIDFrames[8];
-  30          unsigned int HIDFramesPointer = 2; // 从帧的第三个字节开始添加普通按键的KeyCode
+  28          UINT8 xdata kCode;
+  29          UINT8 xdata HIDFrames[8];
+  30          UINT8 xdata HIDFramesPointer = 2; // 从帧的第三个字节开始添加普通按键的KeyCode
   31          
-  32          UINT8 tttt = 0;
-  33          UINT16 TH1_INIT = 333;
+  32          UINT8 xdata Fn0_Status = 0;
+  33          UINT8 xdata Fn1_Status = 0;
   34          
-  35          void makeHIDFrames(void)
-  36          {
-  37   1              HIDFramesPointer = 2;
-  38   1              for (i = 0; i < 8; i++)
-  39   1              {
-  40   2                      HIDFrames[i] = 0;
-  41   2              }
-  42   1              if (allKey[0] == 0 && allKey[1] == 0 && allKey[2] == 0 && allKey[3] == 0 && allKey[4] == 0)
-  43   1              { // 所有按键都是松开的状态
-  44   2                      for (i = 0; i < 8; i++)
-  45   2                      {
-  46   3                              Send_Data_To_UART0(0x00);
-  47   3                      }
-  48   2              }
-  49   1              else
-  50   1              { // 有按键按下的状态
-  51   2                      for (i = 0; i < 5; i++)
-  52   2                      {
-  53   3                              if (allKey[i] != 0)
-  54   3                              {
-C51 COMPILER V9.56.0.0   GPIO                                                              03/26/2020 22:55:56 PAGE 2   
+  35          UINT8 xdata tttt = 0;
+  36          UINT16 xdata TH1_INIT = 333;
+  37          
+  38          void makeHIDFrames(void)
+  39          {
+  40   1              Fn0_Status = 0;
+  41   1              HIDFramesPointer = 2;
+  42   1              for (i = 0; i < 8; i++)
+  43   1              {
+  44   2                      HIDFrames[i] = 0;
+  45   2              }
+  46   1              if (allKey[0] == 0 && allKey[1] == 0 && allKey[2] == 0 && allKey[3] == 0 && allKey[4] == 0)
+  47   1              { // 所有按键都是松开的状态
+  48   2                      for (i = 0; i < 8; i++)
+  49   2                      {
+  50   3                              Send_Data_To_UART0(0x00);
+  51   3                      }
+  52   2              }
+  53   1              else
+  54   1              { // 有按键按下的状态
+C51 COMPILER V9.56.0.0   GPIO                                                              04/14/2020 22:17:38 PAGE 2   
 
-  55   4                                      for (j = 0; j < 8; j++)
-  56   4                                      {
-  57   5                                              if (allKey[i] >> j & 1)
-  58   5                                              {
-  59   6                                                      kCode = keyMap[i * 8 + j];
-  60   6                                                      // if (kCode == KEY_LCTRL | kCode == KEY_LSHIFT | kCode == KEY_LALT | kCode == KEY_LGUI | kCode == K
+  55   2      
+  56   2                      for (i = 0; i < 5; i++)
+  57   2                      {
+  58   3                              if (allKey[i] != 0)
+  59   3                              {
+  60   4                                      for (j = 0; j < 8; j++)
+  61   4                                      {
+  62   5                                              if (allKey[i] >> j & 1)
+  63   5                                              {
+  64   6                                                      if (keyMap[i * 8 + j] == KEY_Fn0)
+  65   6                                                      {
+  66   7                                                              Fn0_Status = 1;
+  67   7                                                      }
+  68   6                                                      if (keyMap[i * 8 + j] == KEY_Fn1)
+  69   6                                                      {
+  70   7                                                              Fn1_Status = 1;
+  71   7                                                      }
+  72   6                                              }
+  73   5                                      }
+  74   4                              }
+  75   3                      }
+  76   2      
+  77   2                      for (i = 0; i < 5; i++)
+  78   2                      {
+  79   3                              if (allKey[i] != 0)
+  80   3                              {
+  81   4                                      for (j = 0; j < 8; j++)
+  82   4                                      {
+  83   5                                              if (allKey[i] >> j & 1)
+  84   5                                              {
+  85   6                                                      if (Fn0_Status == 1)
+  86   6                                                      {
+  87   7                                                              kCode = Fn0_keyMap[i * 8 + j];
+  88   7                                                      }
+  89   6                                                      else
+  90   6                                                      {
+  91   7                                                              kCode = keyMap[i * 8 + j];
+  92   7                                                      }
+  93   6                                                      // if (kCode == KEY_LCTRL | kCode == KEY_LSHIFT | kCode == KEY_LALT | kCode == KEY_LGUI | kCode == K
              -EY_RCTRL | kCode == KEY_RSHIFT | kCode == KEY_RALT | kCode == KEY_RGUI)
-  61   6                                                      if (kCode >= 0xE0) // Control
-  62   6                                                      {
-  63   7                                                              HIDFrames[0] += 0X01 << (kCode & 0X0F);
-  64   7                                                      }
-  65   6                                                      else if (kCode >= 0xC0)
-  66   6                                                      {
-  67   7                                                              HIDFrames[0] += 0x02;
-  68   7                                                              HIDFrames[HIDFramesPointer] = kCode-0xa2;
-  69   7                                                              HIDFramesPointer++;
-  70   7                                                      }
-  71   6                                                      else
-  72   6                                                      {
-  73   7                                                              HIDFrames[HIDFramesPointer] = kCode;
-  74   7                                                              HIDFramesPointer++;
-  75   7                                                      }
-  76   6                                              }
-  77   5                                      }
-  78   4                              }
-  79   3                      }
-  80   2                      for (i = 0; i < 8; i++)
-  81   2                      {
-  82   3                              Send_Data_To_UART0(HIDFrames[i]);
-  83   3                      }
-  84   2              }
-  85   1      }
-  86          
-  87          // 系统时钟      16000 / 16000000 = 0.001s
-  88          // 系统时钟1/12  1333  / 1333333  = 0.001s
-  89          void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
-  90          {
-  91   1              TH1 = (65536 - TH1_INIT) / 256;
-  92   1              TL1 = (65536 - TH1_INIT) % 256;
-  93   1      
-  94   1              // row1到row5依次拉低
-  95   1              P0 = 0xFF;
-  96   1              if (tttt == 5) //所有键扫描完成
-  97   1              {
-  98   2                      tttt = 0;
-  99   2                      if (memcmp(beforeAllKey, allKey, 5) != 0)
- 100   2                      {
- 101   3                              memcpy(beforeAllKey, allKey, 5);
- 102   3      
- 103   3                              makeHIDFrames();
- 104   3                              // Send_Data_To_UART0(allKey[i]);
- 105   3                      }
- 106   2              }
- 107   1              else
- 108   1              {
- 109   2                      if (tttt == 0)
- 110   2                              P00 = 0;
- 111   2                      if (tttt == 1)
- 112   2                              P01 = 0;
- 113   2                      if (tttt == 2)
- 114   2                              P02 = 0;
- 115   2                      if (tttt == 3)
-C51 COMPILER V9.56.0.0   GPIO                                                              03/26/2020 22:55:56 PAGE 3   
+  94   6                                                      if (kCode >= 0xE0) // Control
+  95   6                                                      {
+  96   7                                                              HIDFrames[0] += 0X01 << (kCode & 0X0F);
+  97   7                                                      }
+  98   6                                                      else if (kCode >= 0xC0) // 处理shift组合键
+  99   6                                                      {
+ 100   7                                                              HIDFrames[0] += 0x02;
+ 101   7                                                              HIDFrames[HIDFramesPointer] = kCode - 0xa2;
+ 102   7                                                              HIDFramesPointer++;
+ 103   7                                                      }
+ 104   6                                                      else
+ 105   6                                                      {
+ 106   7                                                              HIDFrames[HIDFramesPointer] = kCode;
+ 107   7                                                              HIDFramesPointer++;
+ 108   7                                                      }
+ 109   6                                              }
+ 110   5                                      }
+ 111   4                              }
+ 112   3                      }
+ 113   2                      for (i = 0; i < 8; i++)
+ 114   2                      {
+ 115   3                              Send_Data_To_UART0(HIDFrames[i]);
+C51 COMPILER V9.56.0.0   GPIO                                                              04/14/2020 22:17:38 PAGE 3   
 
- 116   2                              P03 = 0;
- 117   2                      if (tttt == 4)
- 118   2                              P04 = 0;
- 119   2      
- 120   2                      allKey[tttt] = ~P1;
- 121   2      
- 122   2                      tttt++;
- 123   2              }
- 124   1      }
- 125          
- 126          void main(void)
- 127          {
- 128   1              ///////////////////////////////////WDT///////////////////////////////////////
- 129   1              TA = 0xAA;
- 130   1              TA = 0x55;
- 131   1              WDCON = 0x07; //Setting WDT prescale
- 132   1              set_WDTR;        //WDT run
- 133   1              set_WDCLR;      //Clear WDT timer
- 134   1              set_EWDT;
- 135   1              EA = 1;
- 136   1              //set_WIDPD;
- 137   1              /////////////////////////////////////////////////////////////////////////////
- 138   1      
- 139   1              Set_All_GPIO_Quasi_Mode;
- 140   1      
- 141   1              P00_PushPull_Mode;
- 142   1              P01_PushPull_Mode;
- 143   1              P02_PushPull_Mode;
- 144   1              P03_PushPull_Mode;
- 145   1              P04_PushPull_Mode;
- 146   1      
- 147   1              TIMER1_MODE1_ENABLE;
- 148   1              // set_T1M;
- 149   1              TH1 = (65536 - TH1_INIT) / 256;
- 150   1              TL1 = (65536 - TH1_INIT) % 256;
- 151   1              set_ET1; //enable Timer1 interrupt
- 152   1              set_EA;  //enable interrupts
- 153   1              set_TR1; //Timer1 run
- 154   1      
- 155   1              InitialUART0_Timer3(115200);
- 156   1              // Enable_ADC_AIN1; // Enable AIN0 as ADC input, Find in "Function_define.h" - "ADC INIT"
- 157   1              // Enable_ADC_AIN7;
- 158   1      
- 159   1              while (1)
- 160   1              {
- 161   2                      set_WDCLR; // 喂狗
- 162   2              }
- 163   1      }
+ 116   3                      }
+ 117   2              }
+ 118   1      }
+ 119          
+ 120          // 系统时钟      16000 / 16000000 = 0.001s
+ 121          // 系统时钟1/12  1333  / 1333333  = 0.001s
+ 122          void Timer1_ISR(void) interrupt 3 //interrupt address is 0x001B
+ 123          {
+ 124   1              TH1 = (65536 - TH1_INIT) / 256;
+ 125   1              TL1 = (65536 - TH1_INIT) % 256;
+ 126   1      
+ 127   1              // row1到row5依次拉低
+ 128   1              P0 = 0xFF;
+ 129   1              if (tttt == 5) //所有键扫描完成
+ 130   1              {
+ 131   2                      tttt = 0;
+ 132   2                      if (memcmp(beforeAllKey, allKey, 5) != 0)
+ 133   2                      {
+ 134   3                              memcpy(beforeAllKey, allKey, 5);
+ 135   3      
+ 136   3                              makeHIDFrames();
+ 137   3                              // Send_Data_To_UART0(allKey[i]);
+ 138   3                      }
+ 139   2              }
+ 140   1              else
+ 141   1              {
+ 142   2                      if (tttt == 0)
+ 143   2                              P00 = 0;
+ 144   2                      if (tttt == 1)
+ 145   2                              P01 = 0;
+ 146   2                      if (tttt == 2)
+ 147   2                              P02 = 0;
+ 148   2                      if (tttt == 3)
+ 149   2                              P03 = 0;
+ 150   2                      if (tttt == 4)
+ 151   2                              P04 = 0;
+ 152   2      
+ 153   2                      allKey[tttt] = ~P1;
+ 154   2      
+ 155   2                      tttt++;
+ 156   2              }
+ 157   1      }
+ 158          
+ 159          void main(void)
+ 160          {
+ 161   1              ///////////////////////////////////WDT///////////////////////////////////////
+ 162   1              TA = 0xAA;
+ 163   1              TA = 0x55;
+ 164   1              WDCON = 0x07; //Setting WDT prescale
+ 165   1              set_WDTR;         //WDT run
+ 166   1              set_WDCLR;        //Clear WDT timer
+ 167   1              set_EWDT;
+ 168   1              EA = 1;
+ 169   1              //set_WIDPD;
+ 170   1              /////////////////////////////////////////////////////////////////////////////
+ 171   1      
+ 172   1              Set_All_GPIO_Quasi_Mode;
+ 173   1      
+ 174   1              P00_PushPull_Mode;
+ 175   1              P01_PushPull_Mode;
+ 176   1              P02_PushPull_Mode;
+ 177   1              P03_PushPull_Mode;
+C51 COMPILER V9.56.0.0   GPIO                                                              04/14/2020 22:17:38 PAGE 4   
+
+ 178   1              P04_PushPull_Mode;
+ 179   1      
+ 180   1              TIMER1_MODE1_ENABLE;
+ 181   1              // set_T1M;
+ 182   1              TH1 = (65536 - TH1_INIT) / 256;
+ 183   1              TL1 = (65536 - TH1_INIT) % 256;
+ 184   1              set_ET1; //enable Timer1 interrupt
+ 185   1              set_EA;  //enable interrupts
+ 186   1              set_TR1; //Timer1 run
+ 187   1      
+ 188   1              InitialUART0_Timer3(115200);
+ 189   1              // Enable_ADC_AIN1; // Enable AIN0 as ADC input, Find in "Function_define.h" - "ADC INIT"
+ 190   1              // Enable_ADC_AIN7;
+ 191   1      
+ 192   1              while (1)
+ 193   1              {
+ 194   2                      set_WDCLR; // 喂狗
+ 195   2              }
+ 196   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    785    ----
+   CODE SIZE        =    980    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     18    ----
+   XDATA SIZE       =    107    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     51    ----
+   DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

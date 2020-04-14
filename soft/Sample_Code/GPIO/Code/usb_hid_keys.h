@@ -12,6 +12,9 @@
 #ifndef USB_HID_KEYS
 #define USB_HID_KEYS
 
+#define KEY_Fn0   0xFF
+#define KEY_Fn1   0xFE
+
 /**
  * Modifier masks - used for the first byte in the HID report.
  * NOTE: The second byte in the report is reserved, 0x00
@@ -144,18 +147,18 @@
 #define KEY_POWER 0x66   // Keyboard Power
 #define KEY_KPEQUAL 0x67 // Keypad =
 
-#define KEY_F13 0x68 // Keyboard F13
-#define KEY_F14 0x69 // Keyboard F14
-#define KEY_F15 0x6a // Keyboard F15
-#define KEY_F16 0x6b // Keyboard F16
-#define KEY_F17 0x6c // Keyboard F17
-#define KEY_F18 0x6d // Keyboard F18
-#define KEY_F19 0x6e // Keyboard F19
-#define KEY_F20 0x6f // Keyboard F20
-#define KEY_F21 0x70 // Keyboard F21
-#define KEY_F22 0x71 // Keyboard F22
-#define KEY_F23 0x72 // Keyboard F23
-#define KEY_F24 0x73 // Keyboard F24
+// #define KEY_F13 0x68 // Keyboard F13
+// #define KEY_F14 0x69 // Keyboard F14
+// #define KEY_F15 0x6a // Keyboard F15
+// #define KEY_F16 0x6b // Keyboard F16
+// #define KEY_F17 0x6c // Keyboard F17
+// #define KEY_F18 0x6d // Keyboard F18
+// #define KEY_F19 0x6e // Keyboard F19
+// #define KEY_F20 0x6f // Keyboard F20
+// #define KEY_F21 0x70 // Keyboard F21
+// #define KEY_F22 0x71 // Keyboard F22
+// #define KEY_F23 0x72 // Keyboard F23
+// #define KEY_F24 0x73 // Keyboard F24
 
 #define KEY_OPEN 0x74       // Keyboard Execute
 #define KEY_HELP 0x75       // Keyboard Help
@@ -176,20 +179,20 @@
 // 0x84  Keyboard Locking Scroll Lock
 #define KEY_KPCOMMA 0x85 // Keypad Comma
 // 0x86  Keypad Equal Sign
-#define KEY_RO 0x87               // Keyboard International1
-#define KEY_KATAKANAHIRAGANA 0x88 // Keyboard International2
-#define KEY_YEN 0x89              // Keyboard International3
-#define KEY_HENKAN 0x8a           // Keyboard International4
-#define KEY_MUHENKAN 0x8b         // Keyboard International5
-#define KEY_KPJPCOMMA 0x8c        // Keyboard International6
+// #define KEY_RO 0x87               // Keyboard International1
+// #define KEY_KATAKANAHIRAGANA 0x88 // Keyboard International2
+// #define KEY_YEN 0x89              // Keyboard International3
+// #define KEY_HENKAN 0x8a           // Keyboard International4
+// #define KEY_MUHENKAN 0x8b         // Keyboard International5
+// #define KEY_KPJPCOMMA 0x8c        // Keyboard International6
 // 0x8d  Keyboard International7
 // 0x8e  Keyboard International8
 // 0x8f  Keyboard International9
-#define KEY_HANGEUL 0x90        // Keyboard LANG1
-#define KEY_HANJA 0x91          // Keyboard LANG2
-#define KEY_KATAKANA 0x92       // Keyboard LANG3
-#define KEY_HIRAGANA 0x93       // Keyboard LANG4
-#define KEY_ZENKAKUHANKAKU 0x94 // Keyboard LANG5
+// #define KEY_HANGEUL 0x90        // Keyboard LANG1
+// #define KEY_HANJA 0x91          // Keyboard LANG2
+// #define KEY_KATAKANA 0x92       // Keyboard LANG3
+// #define KEY_HIRAGANA 0x93       // Keyboard LANG4
+// #define KEY_ZENKAKUHANKAKU 0x94 // Keyboard LANG5
 // 0x95  Keyboard LANG6
 // 0x96  Keyboard LANG7
 // 0x97  Keyboard LANG8
@@ -290,25 +293,25 @@
 #define KEY_RIGHTALT 0xe6   // Keyboard Right Alt
 #define KEY_RIGHTMETA 0xe7  // Keyboard Right GUI
 
-#define KEY_MEDIA_PLAYPAUSE 0xe8
-#define KEY_MEDIA_STOPCD 0xe9
-#define KEY_MEDIA_PREVIOUSSONG 0xea
-#define KEY_MEDIA_NEXTSONG 0xeb
-#define KEY_MEDIA_EJECTCD 0xec
+// #define KEY_MEDIA_PLAYPAUSE 0xe8
+// #define KEY_MEDIA_STOPCD 0xe9
+// #define KEY_MEDIA_PREVIOUSSONG 0xea
+// #define KEY_MEDIA_NEXTSONG 0xeb
+// #define KEY_MEDIA_EJECTCD 0xec
 #define KEY_MEDIA_VOLUMEUP 0xed
 #define KEY_MEDIA_VOLUMEDOWN 0xee
-#define KEY_MEDIA_MUTE 0xef
-#define KEY_MEDIA_WWW 0xf0
-#define KEY_MEDIA_BACK 0xf1
-#define KEY_MEDIA_FORWARD 0xf2
-#define KEY_MEDIA_STOP 0xf3
-#define KEY_MEDIA_FIND 0xf4
-#define KEY_MEDIA_SCROLLUP 0xf5
-#define KEY_MEDIA_SCROLLDOWN 0xf6
-#define KEY_MEDIA_EDIT 0xf7
-#define KEY_MEDIA_SLEEP 0xf8
-#define KEY_MEDIA_COFFEE 0xf9
-#define KEY_MEDIA_REFRESH 0xfa
-#define KEY_MEDIA_CALC 0xfb
+// #define KEY_MEDIA_MUTE 0xef
+// #define KEY_MEDIA_WWW 0xf0
+// #define KEY_MEDIA_BACK 0xf1
+// #define KEY_MEDIA_FORWARD 0xf2
+// #define KEY_MEDIA_STOP 0xf3
+// #define KEY_MEDIA_FIND 0xf4
+// #define KEY_MEDIA_SCROLLUP 0xf5
+// #define KEY_MEDIA_SCROLLDOWN 0xf6
+// #define KEY_MEDIA_EDIT 0xf7
+// #define KEY_MEDIA_SLEEP 0xf8
+// #define KEY_MEDIA_COFFEE 0xf9
+// #define KEY_MEDIA_REFRESH 0xfa
+// #define KEY_MEDIA_CALC 0xfb
 
 #endif // USB_HID_KEYS
