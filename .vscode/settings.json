@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "GPIO.C": "cpp"
-    }
+    },
+    "C_Cpp.dimInactiveRegions": false
 }

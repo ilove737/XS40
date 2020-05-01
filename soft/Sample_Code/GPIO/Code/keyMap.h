@@ -1,5 +1,4 @@
 
-// #include "keyScanCode.h"
 #include "usb_hid_keys.h"
 
 // 这个就是 左 键盘布局

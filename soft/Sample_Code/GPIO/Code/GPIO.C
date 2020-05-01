@@ -52,7 +52,6 @@ void makeHIDFrames(void)
 	}
 	else
 	{ // 有按键按下的状态
-
 		for (i = 0; i < 5; i++)
 		{
 			if (allKey[i] != 0)
