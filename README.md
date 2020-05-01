@@ -1,5 +1,10 @@
 # XS40
 
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0501/122150_8fecb6c1_297378.jpeg "b146eeb9497ea70faab857080b56009.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0501/122255_5643e473_297378.jpeg "74a61ceb1c933b0123dbee454cc0db6.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0501/122314_0d19bd51_297378.jpeg "43c635f29237a9f031e426376ea0fd5.jpg")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0501/122328_87f74f31_297378.jpeg "a8b779794b4cff2eecfce481d46be4e.jpg")
+
 #### 介绍
 5x8键盘
 
