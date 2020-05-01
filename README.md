@@ -6,7 +6,7 @@
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0501/122328_87f74f31_297378.jpeg "a8b779794b4cff2eecfce481d46be4e.jpg")
 
 #### 介绍
-5x8键盘
+80键分体键盘
 
 hard 文件夹内是键盘的硬件设计文档，PCB设计使用的是KiCad开源软件。
 
